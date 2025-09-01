@@ -1,0 +1,19 @@
+framework:
+  secret: '%env(APP_SECRET)%'
+  messenger:
+    transports:
+      async: '%env(MESSENGER_TRANSPORT_DSN)%'
+      failed: 'doctrine://default?queue_name=failed'
+    routing:
+      App\Application\Message\Command\SendEmailCommand: async
+  cache:
+    pools:
+      app.analytics_cache:
+        adapter: cache.adapter.redis
+        provider: 'redis://redis:6379/2'
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

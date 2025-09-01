@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Email Analytics Dashboard{% endblock %}
+
+{% block body %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4 text-center">
+      <h6 class="text-muted">Total Emails</h6>
+      <p class="fs-2 fw-bold text-primary">{{ totalEmails }}</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4 text-center">
+      <h6 class="text-muted">Open Rate</h6>
+      <p class="fs-2 fw-bold text-success">{{ openRate }}%</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4 text-center">
+      <h6 class="text-muted">Click Rate</h6>
+      <p class="fs-2 fw-bold text-warning">{{ clickRate }}%</p>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-5 g-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-3">
+      <h6 class="fw-semibold mb-3">Opens vs Clicks</h6>
+      <canvas id="campaignChart"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-3">
+      <h6 class="fw-semibold mb-3">Open Rate by Campaign</h6>
+      <canvas id="openRateChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const campaignNames = {{ campaigns|map(c => c.campaignId)|json_encode|raw }};
+const campaignOpens = {{ campaigns|map(c => c.opens)|json_encode|raw }};
+const campaignClicks = {{ campaigns|map(c => c.clicks)|json_encode|raw }};
+
+// Chart 1: Opens vs Clicks
+new Chart(document.getElementById('campaignChart'), {
+  type: 'bar',
+  data: {
+    labels: campaignNames,
+    datasets: [
+      { label: 'Opens', data: campaignOpens, backgroundColor: 'rgba(25, 135, 84, 0.6)' },
+      { label: 'Clicks', data: campaignClicks, backgroundColor: 'rgba(255, 193, 7, 0.6)' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// Chart 2: Open Rate (line chart with gradient)
+const ctx = document.getElementById('openRateChart').getContext('2d');
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(13, 110, 253, 0.4)');
+gradient.addColorStop(1, 'rgba(13, 110, 253, 0)');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: campaignNames,
+    datasets: [{
+      label: 'Open Rate (%)',
+      data: campaignOpens.map((opens, i) =>
+        Math.round((opens / ({{ campaigns|map(c => c.sent)|json_encode|raw }})[i]) * 100)
+      ),
+      borderColor: '#0d6efd',
+      backgroundColor: gradient,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, max: 100 } }
+  }
+});
+</script>
+{% endblock %}

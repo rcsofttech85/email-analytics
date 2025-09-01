@@ -1,0 +1,3 @@
+maker:
+    root_namespace: 'App\Domain\'
+    # optionally you can set: default_path: '%kernel.project_dir%/src/Domain/Entity'

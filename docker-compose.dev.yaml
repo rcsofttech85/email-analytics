@@ -1,0 +1,51 @@
+services:
+
+  web:
+    build:
+      target: dev
+      context: ./
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: web
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./app:/var/www/symfony
+    depends_on:
+      - app
+  app:
+    build:
+      target: dev
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    container_name: app
+    user: ${UID}:${GID}
+    volumes:
+      - ./app:/var/www/symfony
+    depends_on:
+      - db
+
+  db:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    container_name: db
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+
+  redis:
+    image: redis:latest
+    container_name: email_redis
+    ports: ["6379:6379"]
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: email_mailhog
+    ports: ["8025:8025", "1025:1025"]
+
+volumes:
+  database_data:
