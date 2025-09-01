@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-A modern Email Analytics Dashboard built with Symfony. Track your email campaigns with detailed metrics, visual charts, and actionable insights.
+An Email Analytics Dashboard built with Symfony. Track your email campaigns with detailed metrics, visual charts, and actionable insights.
 
 Features
 
@@ -16,4 +16,6 @@ Visualize opens vs clicks and open rate trends using Chart.js.
 Recent Campaigns Table
 Quickly review recent email campaigns and their performance.
 
-##
+# Dashboard
+
+![Dashboard Screenshot](app/assets/dashboard.png "Email Analytics Dashboard")
