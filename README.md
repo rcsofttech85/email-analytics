@@ -15,3 +15,5 @@ Visualize opens vs clicks and open rate trends using Chart.js.
 
 Recent Campaigns Table
 Quickly review recent email campaigns and their performance.
+
+##
